@@ -13,7 +13,8 @@ var Trackmyself = ((options) => {
   // so we can get reports 
   return {
     exportUsage: (options = {}) => track.scriptReport({...trackingOptions,...options}),
-    currentUserUsage: (options = {}) => track.userReport({...trackingOptions, ...options})
+    currentUserUsage: (options = {}) => track.userReport({...trackingOptions, ...options}),
+    getAllVisits: () => track.getAllVisits(trackingOptions)
   }
   
 })({
