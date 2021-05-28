@@ -2,7 +2,7 @@ class Ptrack {
   constructor(options = {}) {
     this.options = Utils.validateOptions({
       opts: new Map([
-        ['prefix',''],
+        ['prefix', ''],
         ['meta', null],
         ['name', ''],
         ['trackerVersion', 'v1.2'],
@@ -50,17 +50,17 @@ class Ptrack {
   }
 
   recordVersion({ value, userVisit }) {
-    let v = value.versions.find(f => userVisit.version === f.version)
+    let v = value.versions.find(f => userVisit.version === f.versionId)
     if (!v) {
       v = {
-        version: userVisit.version,
-        firsVisit: userVisit.lastVisit,
-        visits: 0
+        versionId: userVisit.version,
+        versionFirstVisit: userVisit.lastVisit,
+        versionVisits: 0
       }
       value.versions.push(v)
     }
-    v.lastVisit = userVisit.lastVisit
-    v.visits++
+    v.versionLastVisit = userVisit.lastVisit
+    v.versionVisits++
     return v
   }
 
@@ -70,23 +70,31 @@ class Ptrack {
   getAllVisits() {
     // get all the proerties with this prefix
     const value = this.makeVisitor()
-    const props = this.options.userStore.getProperties ()
-    return  Object.keys(props).filter(f=>f.startsWith(this.options.prefix)).map(f=>JSON.parse(props[f])).filter(f=>value.userId === f.userId)
+    const props = this.options.userStore.getProperties()
+    return Object.keys(props).filter(f => f.startsWith(this.options.prefix)).map(f => JSON.parse(props[f])).filter(f => value.userId === f.userId)
   }
-  
+
+  /**
+   * get all script usage 
+   */
+  getAllScriptUsage() {
+    // get all the proerties with this prefix
+    const props = this.options.scriptStore.getProperties()
+    return Object.keys(props).filter(f => f.startsWith(this.options.prefix)).map(f => JSON.parse(props[f]))
+  }
   /** 
   * make a visitor record
   */
   makeVisitor() {
     let value = this.getVisitorReport()
     const now = new Date().getTime()
-    if(!value) {
+    if (!value) {
       value = {
         userId: Utils.generateUniqueString(),
         firstVisit: now,
         visits: 0
       }
-     
+
     }
     value.lastVisit = now
     value.visits++;
@@ -101,7 +109,7 @@ class Ptrack {
     // the reason it's a separate thing is so that if multiple tracking is being done in the same store
     // we can tie them together
     const visitor = this.makeVisitor()
-    
+
     // this userreport is specific to the name being tracked
     // so there could be multiple per store, all tied together via the userId
     let value = this.getUserReport()
@@ -123,17 +131,17 @@ class Ptrack {
     value.version = this.options.version
 
     // deal with legacy potental missing versions array
-    if(!value.versions) value.versions = []
+    if (!value.versions) value.versions = []
 
     value.lastVisit = now
     value.visits++;
 
     // this could be used to track changes in tracking model
     value.trackerVersion = this.options.trackerVersion
-    
+
     // always clear out the visit metadata if there's nothing this time
     value.visitMeta = visitMeta || undefined
-    
+
     // record all seen versions, plus first and last time seen
     this.recordVersion({ value, userVisit: value })
     const scriptValue = this.incrementScript(value)
