@@ -24,6 +24,8 @@ var Track = (() => {
     userReport: (options) => getTracker (options).getUserReport(),
     clearUserHistory :(options) => getTracker (options).clearUserHistory(),
     clearScriptHistory :(options) => getTracker (options).clearScriptHistory(),
-    getAllVisits: (options) => getTracker(options).getAllVisits()
+    getAllVisits: (options) => getTracker(options).getAllVisits(),
+    getVisitorReport: (options) => getTracker(options).getVisitorReport(),
+    getAllScriptUsage: (options)=> getTracker(options).getAllScriptUsage()
   }
 })()
