@@ -1,6 +1,10 @@
 class Ptrack {
-  constructor(options = {}) {
-    this.options = Utils.validateOptions({
+  constructor(options) {
+    this.options = this.validateOptions(options)
+  }
+
+  validateOptions (options = {} ) {
+    return  Utils.validateOptions({
       opts: new Map([
         ['prefix', ''],
         ['meta', null],
@@ -14,10 +18,9 @@ class Ptrack {
         ['visitorKey', ''],
         ['failSilently', true]]),
       options,
-      thisOptions: this.options
+      thisOptions: this.options || {}
     })
   }
-
   incrementScript(userVisit) {
     let value = this.getScriptReport()
     if (!value) {
